@@ -1,0 +1,28 @@
+version "3.8"
+
+services:
+  nginx:
+    build: ./requiriments/nginx
+    container_name: nginx
+    restart: always
+    networks:
+      - inception
+
+  wordpress:
+    build: ./requiriments/wordpress
+    container_name: wordpress
+    restart: always
+    networks:
+      - inception
+
+  mariadb:
+    build: ./requiriments/mariadb
+    container_name: mariadb
+    restart: always
+    networks:
+      - inception
+
+
+ networks:
+  inception:
+    driver: bridge
