@@ -16,13 +16,17 @@ services:
       - inception
 
   mariadb:
-    build: ./requiriments/mariadb
+    build: ./requirements/mariadb
+    image: mariadb
     container_name: mariadb
+    env_file:
+      - .env
     restart: always
+    volumes:
+      - ${HOST_DATA_PATH}/mariadb:/var/lib/mysql
     networks:
       - inception
 
-
- networks:
+networks:
   inception:
     driver: bridge
