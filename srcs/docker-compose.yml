@@ -1,20 +1,6 @@
-version "3.8"
+version: "3.8"
 
 services:
-  nginx:
-    build: ./requiriments/nginx
-    container_name: nginx
-    restart: always
-    networks:
-      - inception
-
-  wordpress:
-    build: ./requiriments/wordpress
-    container_name: wordpress
-    restart: always
-    networks:
-      - inception
-
   mariadb:
     build: ./requirements/mariadb
     image: mariadb
@@ -24,6 +10,20 @@ services:
     restart: always
     volumes:
       - ${HOST_DATA_PATH}/mariadb:/var/lib/mysql
+    networks:
+      - inception
+
+  nginx:
+    build: ./requirements/nginx
+    container_name: nginx
+    restart: always
+    networks:
+      - inception
+
+  wordpress:
+    build: ./requirements/wordpress
+    container_name: wordpress
+    restart: always
     networks:
       - inception
 
