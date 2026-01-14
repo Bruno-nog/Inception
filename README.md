@@ -1,8 +1,4 @@
-*Este projeto foi criado como parte do currículo da 42 por brunogue.*
-
 # Inception
-
-## Descrição
 
 Inception é um projeto de administração de sistemas e DevOps cujo objetivo é projetar, construir e implantar uma pilha web completa usando **Docker** e **Docker Compose**. O projeto foca em compreender containerização, isolamento de serviços, redes, volumes e práticas de segurança.
 
@@ -189,11 +185,7 @@ Este projeto enfatiza compreensão sobre automação. Cada escolha de configura�
 
 ## English
 
-*This project has been created as part of the 42 curriculum by brunogue.*
-
 # Inception
-
-## Description
 
 Inception is a system administration and DevOps project whose goal is to design, build, and deploy a complete web stack using **Docker** and **Docker Compose**. The project focuses on understanding containerization, service isolation, networking, volumes, and security best practices.
 
