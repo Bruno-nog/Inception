@@ -1,0 +1,7 @@
+HTTP/1.1 200 OK
+Server: nginx/1.22.1
+Date: Mon, 19 Jan 2026 22:19:05 GMT
+Content-Type: text/html; charset=UTF-8
+Connection: keep-alive
+Link: <https://10.11.200.150/index.php?rest_route=/>; rel="https://api.w.org/"
+
