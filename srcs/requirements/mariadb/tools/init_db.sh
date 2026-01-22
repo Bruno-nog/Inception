@@ -1,9 +1,11 @@
 #!/bin/bash
 set -e
 
-:  "${MYSQL_DATABASE:?Need MYSQL_DATABASE env var}"
-: "${MYSQL_USER:?Need MYSQL_USER env var}"
-: "${MYSQL_PASSWORD:?Need MYSQL_PASSWORD env var}"
+unset MYSQL_HOST
+
+:   "${MYSQL_DATABASE:?Need MYSQL_DATABASE env var}"
+:  "${MYSQL_USER:?Need MYSQL_USER env var}"
+: "${MYSQL_PASSWORD:? Need MYSQL_PASSWORD env var}"
 
 SOCKET=/var/run/mysqld/mysqld.sock
 DATADIR=/var/lib/mysql
@@ -26,21 +28,21 @@ if [ ! -d "${DATADIR}/mysql" ]; then
   mysqld --user=mysql --datadir="${DATADIR}" --socket="${SOCKET}" --skip-networking --pid-file=/var/run/mysqld/mysqld.pid &
   PID=$! 
 
-  echo "[.  ] Waiting for socket file..."
+  echo "[.   ] Waiting for socket file..."
   n=0
   until [ -S "${SOCKET}" ]; do
     n=$((n+1))
     if [ $n -ge 30 ]; then
-      echo "[!] Socket did not appear"
+      echo "[! ] Socket did not appear"
       kill -TERM "$PID" 2>/dev/null || true
       exit 1
     fi
     sleep 0.5
   done
 
-  echo "[. ] Waiting for MariaDB to respond..."
+  echo "[.  ] Waiting for MariaDB to respond..."
   n=0
-  until mysqladmin --socket="${SOCKET}" -uroot ping >/dev/null 2>&1; do
+  until mysqladmin --socket="${SOCKET}" --protocol=socket -uroot ping >/dev/null 2>&1; do
     n=$((n+1))
     if [ $n -ge 60 ]; then
       echo "[!] mariadb did not start in time"
@@ -51,7 +53,7 @@ if [ ! -d "${DATADIR}/mysql" ]; then
   done
 
   echo "[i] Creating database and user..."
-  mysql --socket="${SOCKET}" -uroot <<EOSQL
+  mysql --socket="${SOCKET}" --protocol=socket -uroot <<EOSQL
 CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';
 GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '${MYSQL_USER}'@'localhost';
@@ -62,7 +64,7 @@ EOSQL
 
   if [ -n "${MYSQL_ROOT_PASSWORD:-}" ]; then
     echo "[i] Setting root password..."
-    mysql --socket="${SOCKET}" -uroot <<EOSQL
+    mysql --socket="${SOCKET}" --protocol=socket -uroot <<EOSQL
 ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
 FLUSH PRIVILEGES;
 EOSQL
@@ -70,9 +72,9 @@ EOSQL
 
   echo "[i] Shutting down temporary server..."
   if [ -n "${MYSQL_ROOT_PASSWORD:-}" ]; then
-    mysqladmin --socket="${SOCKET}" -uroot -p"${MYSQL_ROOT_PASSWORD}" shutdown 2>/dev/null || kill -TERM "$PID" 2>/dev/null || true
+    mysqladmin --socket="${SOCKET}" --protocol=socket -uroot -p"${MYSQL_ROOT_PASSWORD}" shutdown 2>/dev/null || kill -TERM "$PID" 2>/dev/null || true
   else
-    mysqladmin --socket="${SOCKET}" -uroot shutdown 2>/dev/null || kill -TERM "$PID" 2>/dev/null || true
+    mysqladmin --socket="${SOCKET}" --protocol=socket -uroot shutdown 2>/dev/null || kill -TERM "$PID" 2>/dev/null || true
   fi
   
   wait "$PID" 2>/dev/null || true

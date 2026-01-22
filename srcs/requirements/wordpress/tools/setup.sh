@@ -20,4 +20,6 @@ if [ ! -f wp-config.php ]; then
   sed -i "s/localhost/${MYSQL_HOST}/" wp-config.php
 fi
 
-exec php-fpm8.2 -F
+chown -R www-data:www-data /var/www/html
+
+exec "$@"
