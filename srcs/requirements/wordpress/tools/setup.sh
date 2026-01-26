@@ -1,6 +1,12 @@
 #!/bin/sh
 set -e
 
+# Loop de espera pelo MariaDB
+until mariadb-admin ping -h"$MYSQL_HOST" --user="$MYSQL_USER" --password="$MYSQL_PASSWORD" --silent; do
+    echo "[i] Waiting for MariaDB..."
+    sleep 2
+done
+
 cd /var/www/html
 
 if [ ! -f wp-config.php ]; then
