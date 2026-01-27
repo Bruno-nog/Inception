@@ -9,7 +9,7 @@ services:
       - .env
     restart: always
     volumes:
-      - ${HOST_DATA_PATH}/mariadb:/var/lib/mysql
+      - mariadb_data:/var/lib/mysql
     networks:
       - inception
 
@@ -23,7 +23,7 @@ services:
       - .env
     restart: unless-stopped
     volumes:
-      - ${HOST_DATA_PATH}/wordpress:/var/www/html
+      - wordpress_data:/var/www/html
     networks:
       - inception
 
@@ -39,11 +39,33 @@ services:
     ports:
       - "443:443"
     volumes:
-      - ${HOST_DATA_PATH}/wordpress:/var/www/html:ro
-      - ${HOST_DATA_PATH}/nginx/certs:/etc/nginx/certs
+      - wordpress_data:/var/www/html:ro
+      - nginx_certs:/etc/nginx/certs
     networks:
       - inception
 
 networks:
   inception:
     driver: bridge
+
+volumes:
+  mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/brunogue/data/mariadb
+
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/brunogue/data/wordpress
+
+  nginx_certs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/brunogue/data/nginx/certs
