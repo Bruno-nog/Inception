@@ -1,11 +1,12 @@
 #!/bin/bash
 set -e
 
+# Do not allow connecting to an external host accidentally
 unset MYSQL_HOST
 
-:   "${MYSQL_DATABASE:?Need MYSQL_DATABASE env var}"
-:  "${MYSQL_USER:?Need MYSQL_USER env var}"
-: "${MYSQL_PASSWORD:? Need MYSQL_PASSWORD env var}"
+: "${MYSQL_DATABASE:?Need MYSQL_DATABASE env var}"
+: "${MYSQL_USER:?Need MYSQL_USER env var}"
+: "${MYSQL_PASSWORD:?Need MYSQL_PASSWORD env var}"
 
 SOCKET=/var/run/mysqld/mysqld.sock
 DATADIR=/var/lib/mysql
@@ -23,16 +24,17 @@ if [ ! -d "${DATADIR}/mysql" ]; then
 
   chown -R mysql:mysql "${DATADIR}"
   chown -R mysql:mysql /var/run/mysqld
+  chmod 755 /var/run/mysqld
 
   echo "[i] Starting temporary MariaDB server for initialization..."
   mysqld --user=mysql --datadir="${DATADIR}" --socket="${SOCKET}" --skip-networking --pid-file=/var/run/mysqld/mysqld.pid &
-  PID=$! 
+  PID=$!
 
   echo "[.   ] Waiting for socket file..."
   n=0
   until [ -S "${SOCKET}" ]; do
     n=$((n+1))
-    if [ $n -ge 30 ]; then
+    if [ $n -ge 60 ]; then
       echo "[! ] Socket did not appear"
       kill -TERM "$PID" 2>/dev/null || true
       exit 1
@@ -44,7 +46,7 @@ if [ ! -d "${DATADIR}/mysql" ]; then
   n=0
   until mysqladmin --socket="${SOCKET}" --protocol=socket -uroot ping >/dev/null 2>&1; do
     n=$((n+1))
-    if [ $n -ge 60 ]; then
+    if [ $n -ge 120 ]; then
       echo "[!] mariadb did not start in time"
       kill -TERM "$PID" 2>/dev/null || true
       exit 1
@@ -76,7 +78,7 @@ EOSQL
   else
     mysqladmin --socket="${SOCKET}" --protocol=socket -uroot shutdown 2>/dev/null || kill -TERM "$PID" 2>/dev/null || true
   fi
-  
+
   wait "$PID" 2>/dev/null || true
 
   echo "[i] MariaDB initialization finished"

@@ -1,8 +1,19 @@
 #!/bin/sh
 set -e
 
-# Loop de espera pelo MariaDB
-until mariadb-admin ping -h"$MYSQL_HOST" --user="$MYSQL_USER" --password="$MYSQL_PASSWORD" --silent; do
+# Wait for MariaDB to be reachable.
+echo "[i] Waiting for MariaDB to be available at ${MYSQL_HOST:-mariadb}..."
+# Try multiple strategies: mysqladmin ping (no creds), mysqladmin ping as root, mysql -e as app user
+n=0
+until \
+  mysqladmin ping -h"${MYSQL_HOST}" --silent >/dev/null 2>&1 || \
+  ( [ -n "${MYSQL_ROOT_PASSWORD:-}" ] && mysqladmin ping -h"${MYSQL_HOST}" -uroot -p"${MYSQL_ROOT_PASSWORD}" --silent >/dev/null 2>&1 ) || \
+  ( [ -n "${MYSQL_USER:-}" ] && [ -n "${MYSQL_PASSWORD:-}" ] && mysql -h"${MYSQL_HOST}" -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" -e "SELECT 1" >/dev/null 2>&1 ); do
+    n=$((n+1))
+    if [ "$n" -ge 120 ]; then
+      echo "[!] MariaDB did not become available in time"
+      exit 1
+    fi
     echo "[i] Waiting for MariaDB..."
     sleep 2
 done
