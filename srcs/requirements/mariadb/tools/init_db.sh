@@ -10,7 +10,7 @@ unset MYSQL_HOST
 SOCKET=/var/run/mysqld/mysqld.sock
 DATADIR=/var/lib/mysql
 
-if [ ! -d "${DATADIR}/mysql" ]; then
+if [ ! -d "${DATADIR}/${MYSQL_DATABASE}" ]; then
     echo "[i] Initializing MariaDB data directory"
 
     if command -v mariadb-install-db >/dev/null 2>&1; then
@@ -86,7 +86,7 @@ EOSQL
     fi
 
     echo "[i] Shutting down temporary server..."
-    mysqladmin --socket="${SOCKET}" --protocol=socket -uroot shutdown || true
+    mysqladmin --socket="${SOCKET}" --protocol=socket -uroot -p"${MYSQL_ROOT_PASSWORD}" shutdown || true
 
     wait "$PID" 2>/dev/null || true
     echo "[i] MariaDB initialization finished"
