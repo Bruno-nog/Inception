@@ -14,3 +14,5 @@ logs:
 
 mariadb:
 	docker-compose -f srcs/docker-compose.yml up -d --build mariadb
+
+# dsfjkhs
