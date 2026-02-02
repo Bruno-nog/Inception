@@ -175,7 +175,7 @@ IA foi usada como **assistente de aprendizado e debugging**, principalmente para
 * Debugar problemas de comunicação entre containers
 * Esclarecer erros de configuração
 
-Todas as decisões de design, implementações e validação final foram realizadas pelo autor.
+Todas as decisões de design, implementações e validação final foram realizadas pelo Bruno N. de Queiroz.
 
 ---
 
@@ -362,7 +362,7 @@ AI was used as a **learning and debugging assistant**, mainly for:
 * Debugging container communication issues
 * Clarifying configuration errors
 
-All design decisions, implementations, and final validation were performed by the author.
+All design decisions, implementations, and final validation were performed by Bruno N. de Queiroz.
 
 ---
 
